@@ -15,3 +15,20 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True  # позволяет конвертировать SQLAlchemy -> Pydantic
+
+
+# Для товаров
+class ProductCreate(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+
+
+class ProductResponse(BaseModel):
+    id: int
+    name: str
+    description: str | None = None
+    price: float
+
+    class Config:
+        from_attributes = True
