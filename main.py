@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -10,7 +11,7 @@ from app.services.product_service import ProductService
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
+templates = Jinja2Templates(directory="app/templates")
 
 # Зависимость для подключения к БД
 def get_db():
@@ -77,3 +78,10 @@ def update_product_endpoint(
 def delete_product_endpoint(product_id: int, db: Session = Depends(get_db)):
     service = ProductService(db)
     return service.delete(product_id)
+
+
+@app.get("/users/html")
+def users_page(request: Request, db: Session = Depends(get_db)):
+    service = UserService(db)
+    users = service.get_all()
+    return templates.TemplateResponse("users.html", {"request": request, "users": users})
