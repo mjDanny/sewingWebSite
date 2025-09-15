@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import models, schemas, crud
@@ -32,3 +32,18 @@ def read_users(db: Session = Depends(get_db)):
 @app.post("/users", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db, user)
+
+
+@app.put("/users/{user_id}", response_model=schemas.UserResponse)
+def update_user_endpoint(user_id: int, user: schemas.UserCreate, db: Session = Depends(get_db)):
+    updated_user = crud.update_users(db, user_id, user)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated_user
+
+@app.delete("/users/{user_id}", response_model=schemas.UserResponse)
+def delete_user_endpoint(user_id: int, db: Session = Depends(get_db)):
+    deleted_user= crud.delete_user(db, user_id)
+    if not deleted_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return deleted_user
