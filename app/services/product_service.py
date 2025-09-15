@@ -10,7 +10,7 @@ class ProductService(BaseService):
             description = product.description,
             price = product.price
         )
-        self.db.addd(db_product)
+        self.db.add(db_product)
         self.db.commit()
         self.db.refresh(db_product)
         return db_product
@@ -19,7 +19,7 @@ class ProductService(BaseService):
         return self.db.query(models.Product).all()
 
     def get_by_id(self, product_id : int):
-        return self.db.query(models.Product).filter(models.Product.id == product_id).firts()
+        return self.db.query(models.Product).filter(models.Product.id == product_id).first()
 
     def update(self, product_id: int, product : schemas.ProductCreate):
         db_product = self.get_by_id(product_id)

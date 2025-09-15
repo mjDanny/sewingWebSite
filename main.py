@@ -29,7 +29,7 @@ def read_root():
 @app.get("/users", response_model=list[schemas.UserResponse])
 def read_users(db: Session = Depends(get_db)):
     service = UserService(db)
-
+    return service.get_all()
 
 @app.post("/users", response_model=schemas.UserResponse)
 def create_user_endpoint(user: schemas.UserCreate, db: Session = Depends(get_db)):
