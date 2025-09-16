@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, Request, Form
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -11,7 +12,12 @@ from app.services.product_service import ProductService
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+# Статика и шаблоны
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
 
 # Зависимость для подключения к БД
 def get_db():
@@ -22,15 +28,56 @@ def get_db():
         db.close()
 
 
+# Главная страница
 @app.get("/")
-def read_root():
-    return {"message": "Hello, Sewing Production!"}
+def index(request: Request, db: Session = Depends(get_db)):
+    products = ProductService(db).get_all()
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "products": products}
+    )
+
+
+# Авторизация
+@app.get("/login")
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+# Регистрация
+@app.get("/register")
+def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
+# Профиль
+@app.get("/profile")
+def profile_page(request: Request, db: Session = Depends(get_db)):
+    service = UserService(db)
+    user = service.get_all()[0] if service.get_all() else None
+    return templates.TemplateResponse(
+        "profile.html", {"request": request, "user": user}
+    )
+
+
+# Страница товара
+@app.get("/products/{product_id}")
+def product_detail(request: Request, product_id: int, db: Session = Depends(get_db)):
+    product = ProductService(db).get(product_id)
+    if not product:
+        return templates.TemplateResponse(
+            "product_detail.html", {"request": request, "product": None}
+        )
+    return templates.TemplateResponse(
+        "product_detail.html",
+        {"request": request, "product": product, "can_edit": False},
+    )
 
 
 @app.get("/users", response_model=list[schemas.UserResponse])
 def read_users(db: Session = Depends(get_db)):
     service = UserService(db)
     return service.get_all()
+
 
 @app.post("/users", response_model=schemas.UserResponse)
 def create_user_endpoint(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -84,4 +131,6 @@ def delete_product_endpoint(product_id: int, db: Session = Depends(get_db)):
 def users_page(request: Request, db: Session = Depends(get_db)):
     service = UserService(db)
     users = service.get_all()
-    return templates.TemplateResponse("users.html", {"request": request, "users": users})
+    return templates.TemplateResponse(
+        "users.html", {"request": request, "users": users}
+    )

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p><strong>{{ "%.2f"|format(product.price) }} ₽</strong></p>
+        
+        {% if can_edit %}
+        <a href="/products/{{ product.id }}/edit" class="btn btn-warning">Редактировать</a>
+        <form method="post" action="/products/{{ product.id }}/delete" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
