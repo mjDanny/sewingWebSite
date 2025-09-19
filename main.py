@@ -1,18 +1,29 @@
 from fastapi import FastAPI, Depends, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.database import engine, SessionLocal
 from app.services.user_service import UserService
 from app.services.product_service import ProductService
-
+from app.routers import users, products, auth
 # Создание таблиц при первом запуске
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="Sewing Website",
+    description="Сайт швейного производства",
+    version="1.0.0"
+)
 
+# Подключение роутеров
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(products.router, prefix="/products", tags=["Products"])
+app.include_router(auth.router, tags=["Auth"])
+# Middleware для работы сессий
+app.add_middleware(SessionMiddleware, secret_key="mega-secret-key")
 
 # Статика и шаблоны
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

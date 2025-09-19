@@ -1,16 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Вход{% endblock %}
+
 {% block content %}
-<h2 class="mb-4">Войти</h2>
-<form method="post" action="/login">
-  <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input type="email" class="form-control" name="email" required>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white text-center">
+          <h4>Авторизация</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/auth/login">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Пароль</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Войти</button>
+          </form>
+        </div>
+        <div class="card-footer text-center">
+          Нет аккаунта? <a href="/auth/register">Зарегистрироваться</a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <label for="password" class="form-label">Пароль</label>
-    <input type="password" class="form-control" name="password" required>
-  </div>
-  <button type="submit" class="btn btn-success">Войти</button>
-</form>
+</div>
 {% endblock %}
