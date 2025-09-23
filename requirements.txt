@@ -1,0 +1,17 @@
+fastapi==0.115.0        # сам фреймворк
+uvicorn==0.30.1         # сервер для запуска FastAPI
+
+# Работа с БД
+SQLAlchemy==2.0.36      # ORM
+psycopg2-binary==2.9.9  # драйвер PostgreSQL
+
+# Шаблонизатор
+jinja2==3.1.4           # HTML-шаблоны (base.html и остальные)
+
+# Хэширование паролей и безопасность
+passlib[bcrypt]==1.7.4  # для хэширования паролей
+python-multipart==0.0.9 # чтобы обрабатывать HTML-формы (POST /register /login)
+
+# Валидация данных
+pydantic==2.9.2
+pydantic-settings==2.5.2
